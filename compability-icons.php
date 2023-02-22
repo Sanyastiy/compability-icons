@@ -9,6 +9,7 @@ License: GPLv3
 Text Domain: compability-icons
 */
 
+
 // Styles attachment
 add_action('wp_enqueue_scripts', 'register_my_scripts');
 function register_my_scripts()
@@ -16,7 +17,8 @@ function register_my_scripts()
     wp_enqueue_style('style', plugins_url('style.css', __FILE__));
 }
 
-// Adding attributes to the Admin Panel Page
+
+// Adding attributes to the appearance on Admin Panel Page
 function add_compability_icons_meta_box()
 {
     add_meta_box(
@@ -28,16 +30,19 @@ function add_compability_icons_meta_box()
         'high'
     );
 }
+add_action('add_meta_boxes', 'add_compability_icons_meta_box');
 
-// Display checkbox in admin panel to manage Icons
+
+// Display Radio buttons in admin panel to manage Icons
 function compability_icons_meta_box_callback($post)
 {
+    // Retreive data from DataBase
     $value_pc = get_post_meta($post->ID, 'display_pc', true);
     $value_ps = get_post_meta($post->ID, 'display_ps', true);
     $value_xbox = get_post_meta($post->ID, 'display_xbox', true);
+
+    // Radiobuttons
 ?>
-    <script>
-    </script>
     <p>PC</p>
     <label><input type="radio" name="display_pc" value="non-compatible" <?php checked($value_pc, 'non-compatible'); ?>> Non-Compatible (hide icon)</label><br>
     <label><input type="radio" name="display_pc" value="compatible" <?php checked($value_pc, 'compatible'); ?>> Compatible</label><br>
@@ -49,15 +54,14 @@ function compability_icons_meta_box_callback($post)
     <label><input type="radio" name="display_xbox" value="non-compatible" <?php checked($value_xbox, 'non-compatible'); ?>> Non-Compatible (hide icon)</label><br>
     <label><input type="radio" name="display_xbox" value="compatible" <?php checked($value_xbox, 'compatible'); ?>> Compatible</label><br>
     <label><input type="radio" name="display_xbox" value="ready" <?php checked($value_xbox, 'ready'); ?>> Ready</label>
-
 <?php
 }
+// it is callback of already add_actioned function, so here no need to add add_action
 
 
-// Save the checkbox value
+// Save the Radio buttons values
 function save_compability_icons_meta_box($post_id)
 {
-
     if (isset($_POST['display_pc'])) {
         update_post_meta($post_id, 'display_pc', sanitize_text_field($_POST['display_pc']));
     }
@@ -68,10 +72,6 @@ function save_compability_icons_meta_box($post_id)
         update_post_meta($post_id, 'display_xbox', sanitize_text_field($_POST['display_xbox']));
     }
 }
-
-
-// Register actions
-add_action('add_meta_boxes', 'add_compability_icons_meta_box');
 add_action('save_post_product', 'save_compability_icons_meta_box');
 
 
@@ -94,12 +94,10 @@ function add_compability_icons_custom_field_to_all_products()
 
     wp_reset_query();
 }
-
-
 add_action('init', 'add_compability_icons_custom_field_to_all_products');
 
 
-// Main display
+// Main display by conditions
 function compability_icons_main_action()
 {
     $display_pc = get_post_meta(get_the_ID(), 'display_pc', true);
