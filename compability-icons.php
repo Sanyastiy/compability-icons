@@ -3,7 +3,7 @@
 Plugin Name: Compability Icons for Gaming accessories
 Description: This plugin allows to add 3 icons, PC, PS, XBOX on product page and manage them in Admin panel
 Author: Alex Beontop
-Version: 1.0
+Version: 1.1
 Author URI: https://github.com/Sanyastiy
 License: GPLv3
 Text Domain: compability-icons
@@ -76,25 +76,48 @@ add_action('save_post_product', 'save_compability_icons_meta_box');
 
 
 // Add Compability Icons custom field to all products
-function add_compability_icons_custom_field_to_all_products()
-{
+function add_compability_icons_custom_field_to_all_products() {
     $args = array(
-        'post_type' => 'product',
-        'posts_per_page' => -1
+        'post_type'      => 'product',
+        'posts_per_page' => -1,
     );
 
-    $products = new WP_Query($args);
+    $products = new WP_Query( $args );
 
-    while ($products->have_posts()) {
+    while ( $products->have_posts() ) {
         $products->the_post();
-        add_post_meta(get_the_ID(), 'display_pc', '');
-        add_post_meta(get_the_ID(), 'display_ps', '');
-        add_post_meta(get_the_ID(), 'display_xbox', '');
+
+        // Get the post ID
+        $post_id = get_the_ID();
+
+        // Check if the meta fields already exist for this post ID
+        $display_pc = get_post_meta( $post_id, 'display_pc', true );
+        $display_ps = get_post_meta( $post_id, 'display_ps', true );
+        $display_xbox = get_post_meta( $post_id, 'display_xbox', true );
+
+        // ONLY If they don't exist, then add them, to prevent overgarbaging.
+        if ( empty( $display_pc ) ) {
+            add_post_meta( $post_id, 'display_pc', '' );
+        } else {
+            update_post_meta( $post_id, 'display_pc', $display_pc );
+        }
+
+        if ( empty( $display_ps ) ) {
+            add_post_meta( $post_id, 'display_ps', '' );
+        } else {
+            update_post_meta( $post_id, 'display_ps', $display_ps );
+        }
+
+        if ( empty( $display_xbox ) ) {
+            add_post_meta( $post_id, 'display_xbox', '' );
+        } else {
+            update_post_meta( $post_id, 'display_xbox', $display_xbox );
+        }
     }
 
     wp_reset_query();
 }
-add_action('init', 'add_compability_icons_custom_field_to_all_products');
+
 
 
 // Main display by conditions
